@@ -1,11 +1,14 @@
 // @ts-nocheck
 // Port of the original Hairpin canvas engine. Gameplay is preserved while typed modules own the app shell.
+import { RacingRenderer } from './renderer3d';
 const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+let racer3d=RacingRenderer.create(cv);
+let use3d=true;try{use3d=localStorage.getItem('cars4-graphics')!=='classic'}catch(e){}
 let W,H,D;
 let Dm=1.5;const rs=()=>{D=Math.min(devicePixelRatio||1,Dm);W=innerWidth;H=innerHeight;cv.width=W*D;cv.height=H*D};
 addEventListener('resize',rs);rs();
 if(!ctx.roundRect)ctx.roundRect=function(x,y,w,h){this.rect(x,y,w,h)};
-let LAPS=3,camMode=0;const TAU=Math.PI*2,TW=230,F='Archivo,system-ui,sans-serif';
+let LAPS=3,camMode=0;const TAU=Math.PI*2,TW=230,F='Barlow Condensed,system-ui,sans-serif';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const ad=(a,b)=>{let d=a-b;while(d>Math.PI)d-=TAU;while(d<-Math.PI)d+=TAU;return d};
 function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -82,7 +85,8 @@ function build(sd){
  for(let i=0;i<460;i++){const x=bb.x0-900+r()*(bb.x1-bb.x0+1800),y=bb.y0-900+r()*(bb.y1-bb.y0+1800);let m=1e12;
   for(const s of S){const d=(s.x-x)**2+(s.y-y)**2;if(d<m)m=d}
   if(m>(TW/2+330)**2)trees.push([x,y,40+r()*50])}
- try{stored=+localStorage.getItem('hairpin-'+sd)||0}catch(e){stored=0}pads=[];for(let i=50;i<N-20;i+=Math.floor(N/7))pads.push(i);
+  try{stored=+localStorage.getItem('hairpin-'+sd)||0}catch(e){stored=0}pads=[];for(let i=50;i<N-20;i+=Math.floor(N/7))pads.push(i);
+  racer3d?.rebuild(S,TW,TH,trees);
 }
 function reset(){
  cars=[];sk=[];parts=[];finN=0;time=0;lastLap=0;rec=[];ghost=null;gmap=[];gbest=1e9;secMsg=null;ghT=0;score=0;combo=0;CH={kind:null,left:0,next:6};calcFX();
@@ -167,6 +171,7 @@ addEventListener('keydown',e=>{
  if(e.code==='KeyR'&&(state==='race'||state==='count'))go(false);
  if(e.code==='KeyM'){mute=!mute;set.snd=mute?0:1;saveSet()}
  if(e.code==='KeyV'){camMode^=1;set.cam=camMode;saveSet()}
+  if(e.code==='KeyB'){use3d=!use3d;try{localStorage.setItem('cars4-graphics',use3d?'3d':'classic')}catch(e){}}
  if(e.code==='KeyO'&&state==='menu'){state='settings';srow=0}
  if(state==='settings'){if(e.code==='ArrowUp'||e.code==='KeyW')srow=Math.max(0,srow-1);if(e.code==='ArrowDown'||e.code==='KeyS')srow=Math.min(ROWS.length-1,srow+1);if(e.code==='ArrowLeft'||e.code==='KeyA')chg(-1);if(e.code==='ArrowRight'||e.code==='KeyD'||e.code==='Enter')chg(1);if(e.code==='Backspace'||e.code==='Escape')leaveSettings()}
  if(e.code==='KeyG'&&state==='menu'){camp=1;champ=0;UPG.splice(0,4,...stats.upg);credits=stats.cr;sel=Math.min(LV.length,stats.unlock);state='levels'}
@@ -272,6 +277,15 @@ function drawProp(t){const x=t[0],y=t[1],r=t[2],k=TH.prop;
   ctx.strokeStyle=((x*7|0)%2)?'#ff4fd8':'#4fe6ff';ctx.lineWidth=4;ctx.strokeRect(x-w+6,y-h+6,2*w-12,2*h-12);ctx.fillStyle='rgba(255,235,150,.85)';
   for(let i=0;i<6;i++)ctx.fillRect(x-w*.7+((i*41+(y|0))%Math.max(10,Math.floor(w*1.2))),y-h*.6+((i*53+(x|0))%Math.max(10,Math.floor(h*1.1))),9,6)}}
 function draw(){
+  if(use3d&&racer3d?.available){
+   try{
+    racer3d.render({cars,player:P,mode:camMode,weather,state,nitro:!!(K.ShiftLeft||K.ShiftRight),scale:FX.scale,dt:Math.min(.05,ema)});
+    ctx.setTransform(D,0,0,D,0,0);ctx.clearRect(0,0,W,H);
+    if(weather===1){ctx.strokeStyle='rgba(213,231,250,.35)';ctx.lineWidth=1.5;ctx.beginPath();for(let i=0;i<90;i++){const x=Math.random()*W,y=Math.random()*H;ctx.moveTo(x,y);ctx.lineTo(x-5,y+19)}ctx.stroke()}
+    const sW=W,sH=H,hs=Math.min(1,W/720);if(hs<1){ctx.setTransform(D*hs,0,0,D*hs,0,0);W=sW/hs;H=sH/hs}
+    hud();W=sW;H=sH;ctx.setTransform(D,0,0,D,0,0);tbtn();return;
+   }catch(error){console.warn('3D rendering failed; returning to classic view.',error);racer3d.dispose();racer3d=null}
+  }
  ctx.setTransform(D,0,0,D,0,0);
  ctx.fillStyle=TH.ground;ctx.fillRect(0,0,W,H);
  const sc=Math.min(W,H)/(720+cam.sp*.55)*(camMode?.75:1),vr=Math.hypot(W,H)/sc*.6,cy0=camMode?H*.5:H*.62;
@@ -301,10 +315,10 @@ function draw(){
  const sW=W,sH=H,hs=Math.min(1,W/720);if(hs<1){ctx.setTransform(D*hs,0,0,D*hs,0,0);W=sW/hs;H=sH/hs}
  hud();W=sW;H=sH;ctx.setTransform(D,0,0,D,0,0);tbtn();
 }
-function tbtn(){if(!tch||state!=='race'&&state!=='count')return;const r=TBr();for(const b of BT()){const on=K[b[0]];ctx.globalAlpha=on?.85:.5;ctx.beginPath();ctx.arc(b[2],b[3],r,0,TAU);ctx.fillStyle=on?'#ef5b3f':'#f3ead6';ctx.fill();ctx.globalAlpha=1;T(b[1],b[2],b[3]+5,Math.round(r*.36),800,'#1d2320','center')}}
-function pill(x,y,w,h){rr(x,y+4,w,h,18,'rgba(0,0,0,.16)');rr(x,y,w,h,18,'rgba(243,234,214,.94)');ctx.lineWidth=2;ctx.strokeStyle='rgba(29,35,32,.15)';ctx.stroke()}
+function tbtn(){if(!tch||state!=='race'&&state!=='count')return;const r=TBr();for(const b of BT()){const on=K[b[0]];ctx.save();ctx.shadowColor=on?'#ffd24d':'rgba(0,0,0,.5)';ctx.shadowBlur=on?18:9;ctx.beginPath();ctx.arc(b[2],b[3],r,0,TAU);ctx.fillStyle=on?'#ffd24d':'rgba(10,20,25,.82)';ctx.fill();ctx.shadowBlur=0;ctx.lineWidth=2;ctx.strokeStyle=on?'#fff5c5':'rgba(255,255,255,.55)';ctx.stroke();T(b[1].toUpperCase(),b[2],b[3]+5,Math.round(r*.30),900,on?'#18202a':'#fff9e6','center');ctx.restore()}}
+function pill(x,y,w,h){rr(x,y+5,w,h,16,'rgba(0,0,0,.28)');rr(x,y,w,h,16,'rgba(12,23,29,.88)');ctx.lineWidth=1.5;ctx.strokeStyle='rgba(255,255,255,.28)';ctx.stroke()}
 function hud(){
- const M=22,o=order(),pos=o.indexOf(P)+1,ink='#1d2320';
+  const M=22,o=order(),pos=o.indexOf(P)+1,ink='#f9f4e9';
  if(state!=='menu'){
   pill(M,M,150,64);T(pos+'',M+18,M+50,50,900,ink);T('of 6',M+66,M+47,20,500,ink);
   const lp=clamp(P.lap,1,LAPS);
@@ -389,7 +403,7 @@ function hud(){
 }
 let lastUi='';
 function publishUi(){
- const detail={state,track:TH.n,laps:LAPS,mode:MODES[set.mode].n,difficulty:DN[set.diff],races:stats.races,wins:stats.wins,bestScore:stats.bestScore};
+ const detail={state,track:TH.n,laps:LAPS,mode:MODES[set.mode].n,difficulty:DN[set.diff],races:stats.races,wins:stats.wins,bestScore:stats.bestScore,graphics:use3d&&racer3d?.available?'3D':'CLASSIC'};
  const next=JSON.stringify(detail);
  if(next!==lastUi){lastUi=next;window.dispatchEvent(new CustomEvent('cars4:state',{detail}))}
 }
@@ -431,7 +445,7 @@ function frame(t){
  cam.sp+=((state==='menu'?200:P.sp)-cam.sp)*(1-Math.exp(-dt*3));
  if(gn&&au!==1){const on=state==='race'&&!mute&&!paused;osc.frequency.value=70+(P.rpm||0)*150+(P.gear||1)*8;gn.gain.value=on?.025+(K.ArrowUp||K.KeyW?.02:0):0;g2.gain.value=on&&P.dr?.012:0;o2.frequency.value=480+P.sp*.5}
  {const g=clamp(1+Math.floor(P.sp/105),1,6);P.gear=g;P.rpm=g<6?(P.sp-(g-1)*105)/105:clamp((P.sp-525)/350,0,1)}
- prefetch();draw();publishUi();requestAnimationFrame(frame);
+  if(!use3d||!racer3d?.available)prefetch();draw();publishUi();requestAnimationFrame(frame);
 }
 camMode=set.cam;mute=!set.snd;mapSel=set.map>=MAPS.length?0:set.map;build(1000+Math.random()*9000|0);applyRace();reset();
 (document.fonts&&document.fonts.ready||Promise.resolve()).then(()=>requestAnimationFrame(frame));

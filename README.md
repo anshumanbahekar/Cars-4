@@ -2,6 +2,8 @@
 
 An arcade racing fan project based on the original **Hairpin** game. The original driving engine, AI rivals, tracks, career, championship, weather, upgrades, ghosts, and touch controls are preserved. A TypeScript application shell adds the new race menu and a shared daily challenge. A Python Vercel Function supplies that day's deterministic track configuration.
 
+The WebGL view renders the tracks, scenery, lighting, weather, and racing cars in 3D using Three.js. Browsers without WebGL automatically use the original 2D canvas view. The menu character image is from the [official Disney Cars site](https://cars.disney.com/); Cars and Lightning McQueen are Disney/Pixar properties. This is an unofficial fan project.
+
 ## Run locally
 
 Requires Node.js 20+ and Python 3.11+.
@@ -26,7 +28,7 @@ Import this GitHub repository in Vercel. The project is configured as Vite with 
 
 ## Controls
 
-Drive with arrows or WASD. Hold Shift for nitro, Space for the handbrake, E for DRS, P to pause, V to change camera, and R to restart. On the menu, choose Quick Race, Career, Championship, Settings, or Daily Challenge. Touch controls appear automatically on touch devices.
+Drive with arrows or WASD. Hold Shift for nitro, Space for the handbrake, E for DRS, P to pause, V to change camera, B to switch between 3D and classic graphics, and R to restart. On the menu, choose Quick Race, Career, Championship, Settings, or Daily Challenge. Touch controls appear automatically on touch devices.
 
 ## Architecture
 

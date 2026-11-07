@@ -11,6 +11,7 @@ interface GameState {
   races: number;
   wins: number;
   bestScore: number;
+  graphics: string;
 }
 
 const app = document.querySelector<HTMLDivElement>('#app');
@@ -40,13 +41,14 @@ app.innerHTML = `
     </section>
     <aside class="race-panel" aria-label="Race options">
       <div class="panel-top"><span>THE GRID</span><span>CHOOSE YOUR ROAD <b>↗</b></span></div>
-      <div class="hero-car"><div class="car-ring"></div><img src="/cars/car0.webp" alt="Red racing car" /><div class="car-number">95</div></div>
+      <div class="hero-car"><img src="/lightning-mcqueen-official.jpeg" alt="Lightning McQueen, car number 95" /><div class="hero-image-caption"><span>THE LEGEND RETURNS</span><b>NO. 95</b></div></div>
       <div class="panel-heading"><span>READY TO RACE?</span><strong>YOU'RE UP NEXT.</strong></div>
       <div class="race-detail"><span>CIRCUIT</span><b id="race-track">Radiator Springs</b></div>
       <div class="race-detail"><span>FORMAT</span><b id="race-format">3 LAPS · NORMAL</b></div>
       <div class="panel-actions">
         <button data-key="KeyC"><span class="option-icon">🏆</span><span><b>CHAMPIONSHIP</b><small>Three races. One trophy.</small></span><span class="option-arrow">↗</span></button>
         <button data-key="KeyO"><span class="option-icon">⚙</span><span><b>RACE SETTINGS</b><small>Tracks, modes, weather & more.</small></span><span class="option-arrow">↗</span></button>
+        <button data-key="KeyB"><span class="option-icon">◈</span><span><b id="graphics-label">3D GRAPHICS</b><small>Switch between 3D and classic views.</small></span><span class="option-arrow">↗</span></button>
       </div>
       <div class="daily-card"><div><span class="daily-label">DAILY CHALLENGE <i>NEW</i></span><strong id="daily-title">Loading today's circuit…</strong><small id="daily-subtitle">Same course for everyone today</small></div><button id="daily-button" aria-label="Start daily challenge" disabled>→</button></div>
     </aside>
@@ -81,6 +83,7 @@ window.addEventListener('cars4:state', ((event: CustomEvent<GameState>) => {
   app.querySelector('#stat-races')!.textContent = String(s.races);
   app.querySelector('#stat-wins')!.textContent = String(s.wins);
   app.querySelector('#stat-drift')!.textContent = String(s.bestScore);
+  app.querySelector('#graphics-label')!.textContent = `${s.graphics} GRAPHICS`;
 }) as EventListener);
 
 let daily: DailyChallenge | null = null;
