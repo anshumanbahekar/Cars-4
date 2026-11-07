@@ -178,7 +178,7 @@ addEventListener('keydown',e=>{
 });
 addEventListener('keyup',e=>K[e.code]=0);
 addEventListener('blur',()=>{for(const k in K)K[k]=0;if(state==='race')paused=true});
-let tch=false;
+let tch=matchMedia('(pointer: coarse)').matches||navigator.maxTouchPoints>0;
 const TBr=()=>Math.min(44,W/12);
 const BT=()=>{const r=TBr(),m=r+16,y=H*.52;return[['ArrowLeft','Left',m,y],['ArrowRight','Right',m+2*r+14,y],['ArrowUp','Gas',W-m,y-r-10],['ShiftLeft','Nitro',W-m,y+r+10],['ArrowDown','Brake',W-m-2*r-14,y-r-10],['Space','Drift',W-m-2*r-14,y+r+10]]};
 function tt(e){e.preventDefault();tch=true;if(!au)snd();

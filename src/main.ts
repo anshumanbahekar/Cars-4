@@ -26,6 +26,7 @@ app.innerHTML = `
       <div class="eyebrow"><span class="eyebrow-line"></span> THE LEGEND CONTINUES <span class="eyebrow-index">01 / 04</span></div>
       <h1 id="main-title">THE NEXT <em>LAP.</em></h1>
       <p class="intro-copy">A new chapter on the track. Outrun your rivals, master every corner, and take the road to racing glory.</p>
+      <p class="mobile-tip">On mobile: hold <b>GAS</b> on the right to drive forward. Use <b>LEFT</b> and <b>RIGHT</b> to steer.</p>
       <div class="action-row">
         <button class="primary-button" data-key="Enter"><span class="button-icon">▶</span> QUICK RACE <span class="button-arrow">↗</span></button>
         <button class="secondary-button" data-key="KeyG">EXPLORE CAREER <span>→</span></button>
