@@ -1,4 +1,5 @@
 import './style.css';
+import './cars95.css';
 import { loadChallenge, type DailyChallenge } from './challenge';
 import './game/engine';
 

@@ -1,0 +1,128 @@
+:root {
+  color: #fff8e7;
+  background: #080d14;
+}
+
+body { background: #080d14; }
+
+.site-header {
+  border-bottom: 2px solid #d92d2c;
+  background: linear-gradient(100deg, #0c1018 8%, #30171d 54%, #0b1118 100%);
+  box-shadow: 0 10px 36px #0007;
+}
+.brand-mark, .caption-logo {
+  background: #d6262a;
+  color: #ffe35e;
+  box-shadow: inset 0 0 0 3px #ffe35e, inset 0 0 0 5px #d6262a, 0 0 22px #e4343155;
+}
+.brand-text b, .header-right #header-track { color: #ffd447; }
+.live-dot { background: #f13736; box-shadow: 0 0 16px #f13736; }
+
+.menu {
+  isolation: isolate;
+  background:
+    linear-gradient(112deg, #090e17fa 2%, #151721eb 38%, #34171dc9 70%, #090d14cc 100%),
+    repeating-linear-gradient(135deg, #ec302d 0 18px, #17151c 18px 36px);
+}
+.menu::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: .12;
+  background: conic-gradient(#fff 25%, transparent 0 50%, #fff 0 75%, transparent 0) 0 0 / 54px 54px;
+  mask-image: linear-gradient(90deg, transparent 18%, #000 100%);
+}
+.menu::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 48%;
+  width: 11px;
+  transform: skewX(-18deg);
+  background: linear-gradient(#f2c940, #da292a 50%, #f2c940);
+  box-shadow: 17px 0 0 #d6282a55;
+  opacity: .75;
+  pointer-events: none;
+  z-index: -1;
+}
+.intro { position: relative; }
+.intro::before {
+  content: '95';
+  position: absolute;
+  font: italic 900 clamp(210px, 31vw, 520px)/1 'Barlow Condensed', sans-serif;
+  color: #e32d2b;
+  opacity: .07;
+  top: 8%;
+  right: -3%;
+  z-index: -1;
+  pointer-events: none;
+}
+.eyebrow { color: #ffd75b; }
+.eyebrow-line { background: #ee3432; height: 4px; }
+.intro h1 { text-shadow: 6px 8px 0 #0009, 0 0 40px #e82b2626; }
+.intro h1 em { color: #ffd13e; -webkit-text-stroke: 1px #ffefb9; }
+.intro-copy { color: #e7e2d8; }
+.primary-button {
+  color: #fff8eb;
+  background: linear-gradient(135deg, #f43d33, #bc191f);
+  box-shadow: 0 6px 0 #681013, 0 10px 30px #d92d2c55;
+  border: 1px solid #ff9c6e;
+}
+.primary-button:hover { box-shadow: 0 8px 0 #681013, 0 12px 38px #d92d2c88; }
+.secondary-button { background: #0b131cc9; border-color: #f0b75b88; }
+.secondary-button:hover { background: #a72227; }
+.race-stats { border-color: #e64a3d88; }
+.race-stats strong { color: #ffe087; }
+.race-stats span { color: #f4b9a4; }
+.intro-credit { color: #b7b9b8; }
+
+.race-panel {
+  color: #fff9eb;
+  background: #101820;
+  border: 2px solid #f3cd50;
+  border-radius: 14px;
+  box-shadow: 18px 24px 0 #06080dbb, 0 0 90px #d9362f55;
+}
+.panel-top {
+  color: #fff9e8;
+  border: 0;
+  background: linear-gradient(90deg, #be1e24, #e84530);
+}
+.panel-top span:last-child, .panel-top b { color: #ffe578; }
+.hero-car { border-bottom: 3px solid #f4cb4c; }
+.hero-image-caption { background: linear-gradient(transparent, #101820eb); }
+.panel-heading span { color: #f1bd55; }
+.panel-heading strong { color: #fff8e8; }
+.race-detail { border-color: #f1d8ab33; }
+.race-detail span { color: #c9a79c; }
+.race-detail b { color: #fff5d8; }
+.panel-actions button { color: #fff4e4; border-color: #f1d8ab33; }
+.panel-actions button:hover { background: #a7222b88; }
+.panel-actions small { color: #c6b8ac; }
+.option-icon { background: #ca2a29; color: #ffe16d; }
+.option-arrow { color: #ffd44b; }
+.daily-card {
+  margin-top: 11px;
+  background: linear-gradient(110deg, #a31d25, #e0392d);
+  border-top: 1px solid #fa9d69;
+}
+.daily-label { color: #ffe369; }
+.daily-label i { color: #291516; background: #ffd84a; }
+.daily-card small { color: #f4d9c6; }
+.daily-card button { background: #ffe266; }
+.site-footer { color: #f0d9c7; background: #0b1019f5; border-top-color: #d62e2e; }
+.keycap { color: #ffe071; border-color: #d7715a; }
+.footer-sep { color: #ff5541; }
+.game-caption { border-color: #e53b3488; background: #0b1019dd; }
+.game-caption b { color: #ffd651; }
+.audio-toggle { border-color: #ffd65b; color: #ffe16a; background: #a62027e8; }
+
+@media (max-width: 760px) {
+  .menu { background: linear-gradient(165deg, #0a1019f7, #36161ce8 65%, #0a1019f5); }
+  .menu::after { display: none; }
+  .intro::before { right: 1%; top: 0; }
+  .race-panel { box-shadow: 0 12px 42px #000a; }
+}

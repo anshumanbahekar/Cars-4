@@ -185,6 +185,19 @@ function makeCar(color: string, number: string, isPlayer: boolean): THREE.Group 
   const decal = new THREE.Mesh(new THREE.PlaneGeometry(28, 28), new THREE.MeshBasicMaterial({ map: makeNumberTexture(number), transparent: true, depthWrite: false }));
   decal.rotation.x = -Math.PI / 2; decal.position.set(-9, 34.3, 0); group.add(decal);
   if (isPlayer) {
+    const headlightColor = new THREE.Color('#fff0b1');
+    for (const side of [-1, 1]) {
+      const beam = new THREE.SpotLight(headlightColor, 9000, 520, .42, .7, 1.5);
+      beam.position.set(42, 18, side * 16);
+      beam.target.position.set(190, 2, side * 25);
+      beam.castShadow = false;
+      group.add(beam, beam.target);
+      (group.userData.headlights ??= []).push(beam);
+    }
+    const brakeGlow = new THREE.PointLight('#ff2929', 1200, 105, 2);
+    brakeGlow.position.set(-43, 15, 0);
+    group.add(brakeGlow);
+    group.userData.brakeGlow = brakeGlow;
     const sideTex = makeSideTexture();
     for (const side of [-1, 1]) {
       const bolt = new THREE.Mesh(new THREE.PlaneGeometry(37, 17), new THREE.MeshBasicMaterial({ map: sideTex, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
@@ -355,10 +368,10 @@ export class RacingRenderer {
     this.scene.background = sky;
     this.scene.fog = new THREE.FogExp2(sky, night ? .00017 : weather === 1 ? .00018 : .00011);
     this.sun.color.set(night ? '#a7bdff' : weather === 1 ? '#cedbe2' : '#fff3d5');
-    this.sun.intensity = night ? 1.1 : weather === 1 ? 1.5 : 2.6;
-    this.hemi.intensity = night ? .75 : weather === 1 ? 1.35 : 2;
+    this.sun.intensity = night ? .55 : weather === 1 ? 1.5 : 2.6;
+    this.hemi.intensity = night ? .38 : weather === 1 ? 1.35 : 2;
     if (this.roadMaterial) { this.roadMaterial.roughness = weather === 1 ? .2 : .78; this.roadMaterial.metalness = weather === 1 ? .2 : .02; }
-    this.renderer.toneMappingExposure = night ? 1.65 : weather === 1 ? 1.35 : 1.45;
+    this.renderer.toneMappingExposure = night ? 1.25 : weather === 1 ? 1.35 : 1.45;
   }
 
   render(frame: RaceFrame): void {
@@ -377,6 +390,11 @@ export class RacingRenderer {
       model.rotation.y = -(car.ra ?? car.a);
       model.scale.setScalar(i === 4 ? frame.scale : 1);
       (model.userData.flames as THREE.Group).visible = i === 4 && frame.nitro && frame.state === 'race';
+       if (i === 4) {
+         const night = frame.weather === 2 || !!this.theme?.night;
+         for (const headlight of model.userData.headlights as THREE.SpotLight[]) headlight.visible = night;
+         (model.userData.brakeGlow as THREE.PointLight).visible = night && !!car.brk;
+       }
       const wheels = model.userData.wheels as THREE.Mesh[];
       for (const wheel of wheels) wheel.rotation.y += (car.sp ?? 0) * frame.dt * .024;
       model.visible = true;
