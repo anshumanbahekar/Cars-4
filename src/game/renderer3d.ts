@@ -236,7 +236,7 @@ export class RacingRenderer {
     this.renderer.toneMappingExposure = 1.38;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.shadowMap.enabled = !matchMedia('(pointer: coarse)').matches;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
     before.parentNode!.insertBefore(this.renderer.domElement, before);
     this.renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); this.ready = false; });
     this.scene.add(this.world, this.carRoot, this.sun, this.hemi);

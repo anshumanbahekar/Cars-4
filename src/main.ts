@@ -12,6 +12,7 @@ interface GameState {
   wins: number;
   bestScore: number;
   graphics: string;
+  sound: boolean;
 }
 
 const app = document.querySelector<HTMLDivElement>('#app');
@@ -49,12 +50,14 @@ app.innerHTML = `
         <button data-key="KeyC"><span class="option-icon">🏆</span><span><b>CHAMPIONSHIP</b><small>Three races. One trophy.</small></span><span class="option-arrow">↗</span></button>
         <button data-key="KeyO"><span class="option-icon">⚙</span><span><b>RACE SETTINGS</b><small>Tracks, modes, weather & more.</small></span><span class="option-arrow">↗</span></button>
         <button data-key="KeyB"><span class="option-icon">◈</span><span><b id="graphics-label">3D GRAPHICS</b><small>Switch between 3D and classic views.</small></span><span class="option-arrow">↗</span></button>
+        <button data-key="KeyM"><span class="option-icon">♫</span><span><b id="sound-label">SOUND ON</b><small>Engine, tyres, collisions and race cues.</small></span><span class="option-arrow">↗</span></button>
       </div>
       <div class="daily-card"><div><span class="daily-label">DAILY CHALLENGE <i>NEW</i></span><strong id="daily-title">Loading today's circuit…</strong><small id="daily-subtitle">Same course for everyone today</small></div><button id="daily-button" aria-label="Start daily challenge" disabled>→</button></div>
     </aside>
   </main>
   <footer class="site-footer" id="footer"><div><span class="keycap">↑↓←→</span> / WASD DRIVE <span class="footer-sep">·</span> <span class="keycap">SHIFT</span> NITRO <span class="footer-sep">·</span> <span class="keycap">SPACE</span> HANDBRAKE</div><div>BUILT FOR THE LOVE OF RACING <span class="footer-sep">●</span> V 1.0</div></footer>
   <div class="game-caption" id="game-caption" hidden><span class="caption-logo">95</span><span>CARS 4 <b>THE NEXT LAP</b></span><span class="caption-controls">P PAUSE · R RESTART · V CAMERA</span></div>
+  <button class="audio-toggle" id="audio-toggle" data-key="KeyM" aria-label="Mute game audio" hidden>♫</button>
 `;
 
 function tapKey(code: string): void {
@@ -70,12 +73,16 @@ app.querySelectorAll<HTMLButtonElement>('[data-key]').forEach((button) => {
 const menu = app.querySelector<HTMLElement>('#menu')!;
 const footer = app.querySelector<HTMLElement>('#footer')!;
 const caption = app.querySelector<HTMLElement>('#game-caption')!;
+const audioToggle = app.querySelector<HTMLButtonElement>('#audio-toggle')!;
 window.addEventListener('cars4:state', ((event: CustomEvent<GameState>) => {
   const s = event.detail;
   const onMenu = s.state === 'menu';
   menu.hidden = !onMenu;
   footer.hidden = !onMenu;
   caption.hidden = onMenu || s.state === 'settings' || s.state === 'levels';
+  audioToggle.hidden = onMenu;
+  audioToggle.textContent = s.sound ? '♫' : '♪̸';
+  audioToggle.setAttribute('aria-label', s.sound ? 'Mute game audio' : 'Enable game audio');
   document.body.classList.toggle('in-game', !onMenu);
   app.querySelector('#header-track')!.textContent = s.track.toUpperCase();
   app.querySelector('#race-track')!.textContent = s.track;
@@ -84,6 +91,7 @@ window.addEventListener('cars4:state', ((event: CustomEvent<GameState>) => {
   app.querySelector('#stat-wins')!.textContent = String(s.wins);
   app.querySelector('#stat-drift')!.textContent = String(s.bestScore);
   app.querySelector('#graphics-label')!.textContent = `${s.graphics} GRAPHICS`;
+  app.querySelector('#sound-label')!.textContent = s.sound ? 'SOUND ON' : 'SOUND OFF';
 }) as EventListener);
 
 let daily: DailyChallenge | null = null;
